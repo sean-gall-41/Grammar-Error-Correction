@@ -1,20 +1,10 @@
-import os
+import argparse
 import pathlib as pl
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-
+import pandas as pd
 import h5py
 from tqdm import tqdm
 
-for dirname, _, filenames in os.walk('/kaggle/'):
-    for filename in filenames:
-        if "hdf5" in filename: 
-            print(filename, " shape:")
-            with h5py.File(os.path.join(dirname,filename), 'r') as h5f:
-                print(h5f['input'].shape)
-                print(h5f['labels'].shape)
-
-def tsv_to_hdf5(tsv_path, hdf5_path, percentage=1.0):
+def convert_tsv_to_hdf5(tsv_path, hdf5_path, percentage=1.0):
     df = pd.read_csv(tsv_path, sep='\t', header=None, names=['input', 'labels'])
     num_lines = int(len(df) * percentage)
 
@@ -33,8 +23,14 @@ def tsv_to_hdf5(tsv_path, hdf5_path, percentage=1.0):
                 if i + 1 >= num_lines:
                     break
 
-tsv_path = "/kaggle/input/c4200m/C4_200M.tsv-00000-of-00010"
-hdf5_path = "/kaggle/working/C4_200M.hdf5-00000-of-00010"
-percentage = 0.1  # 1% of the source data
+def main():
+    parser = argparse.ArgumentParser(description='Convert TSV file to HDF5 format.')
+    parser.add_argument('tsv_path', help='Path to the TSV file')
+    parser.add_argument('hdf5_path', help='Path to save the resulting HDF5 file')
+    parser.add_argument('--percentage', type=float, default=1.0, help='Percentage of lines to convert (default: 1.0)')
+    args = parser.parse_args()
 
-tsv_to_hdf5(tsv_path, hdf5_path, percentage)
+    convert_tsv_to_hdf5(args.tsv_path, args.hdf5_path, args.percentage)
+
+if __name__ == '__main__':
+    main()
