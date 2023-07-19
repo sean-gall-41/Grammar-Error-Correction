@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+import os
 import argparse
 import pathlib as pl
 import pandas as pd
@@ -25,12 +28,39 @@ def convert_tsv_to_hdf5(tsv_path, hdf5_path, percentage=1.0):
 
 def main():
     parser = argparse.ArgumentParser(description='Convert TSV file to HDF5 format.')
-    parser.add_argument('tsv_path', help='Path to the TSV file')
-    parser.add_argument('hdf5_path', help='Path to save the resulting HDF5 file')
-    parser.add_argument('--percentage', type=float, default=1.0, help='Percentage of lines to convert (default: 1.0)')
+    parser.add_argument('--percentage', type=float, nargs='?', default=1.0, help='Percentage of lines to convert (default: 1.0)')
+    subparsers = parser.add_subparsers(help='possible subcommands', dest="subcommand")
+    
+    # create the parser for the "single" command
+    parser_single = subparsers.add_parser('single', help='convert a single TSV file to HDF5 format')
+    parser_single.add_argument('-i', '--input', type=str, help='Path to the TSV file')
+    parser_single.add_argument('-o', '--output', type=str, help='Path to save the resulting HDF5 file')
+
+    # create the parser for the "command_2" command
+    parser_batch = subparsers.add_parser('batch', help='convert a batch of TSV files to HDF5 format')
+    parser_batch.add_argument('-i', '--input', type=str, help='Path to a set of TSV files to be processed')
+
     args = parser.parse_args()
 
-    convert_tsv_to_hdf5(args.tsv_path, args.hdf5_path, args.percentage)
+    match args.subcommand:
+        case 'single':
+            if args.input is not None and args.output is not None:
+                print(f"Converting '{args.input}' -> '{args.output}'")
+                convert_tsv_to_hdf5(args.input, args.output, args.percentage)
+            else:
+                parser.error("One or either of positional arguments missing for subcommand 'single'.")
+        case 'batch':
+            if args.input is not None:
+                file_list = os.listdir(args.input)
+                tsv_files = [filename for filename in file_list if 'tsv' in filename and 'zip' not in filename]
+                for tsv_filename in tsv_files:
+                    full_tsv_path = f"{args.input}{tsv_filename}"
+                    full_hdf5_path = f"{args.input}{tsv_filename.replace('tsv', 'hdf5')}"
+                    print(f"Converting '{full_tsv_path}' -> '{full_hdf5_path}'")
+                    convert_tsv_to_hdf5(full_tsv_path, full_hdf5_path, args.percentage)
+        case other:
+            parser.error('You must include a subcommand!')
 
 if __name__ == '__main__':
     main()
+
