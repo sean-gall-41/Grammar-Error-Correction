@@ -3,3 +3,4 @@
 data/
 wandb/
 t5_gec_model/
+.vscode/
