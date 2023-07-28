@@ -3,3 +3,7 @@
 data/
 wandb/
 t5_gec_model/
+.vscode/
+.vector_cache/
+checkpoints/
+glove.42B.300d.20K.pth
