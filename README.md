@@ -1,7 +1,8 @@
-# GEC with Transformer
+# GEC
 
-This is a project as part of NeuroMatch Academy 2023 which aims to evaluate Grammar Error Correction
-and Detection on transformers.
+This repository contains code for the NeuroMatch Academy (NMA 2023) DL summer course project attempting to evaluate Grammar Error Correction and Detection with neural networks.
+
+The project is mainly an exercise to replicate findings from different NNs for GEC by re-implementing and evaluating several basic analyses.
 
 ---
 
@@ -28,8 +29,6 @@ python csv_to_hf5.py batch [-h] [-i INPUT_DIR] [--percentage 0.1 (default 0.1)]
 ### Run the model
 
 By using [baseline notebook](./gec-with-transformers-from-scratch.ipynb) you can run the model.
-
-
 
 
 
